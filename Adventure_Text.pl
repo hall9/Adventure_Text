@@ -1,13 +1,13 @@
 /*
   This is a little adventure game.  There are three
-  entities: you, a treasure, and an ogre.  There are 
-  six places: a valley, a path, a cliff, a fork, a maze, 
+  entities: you, a treasure, and an ogre.  There are
+  six places: a valley, a path, a cliff, a fork, a maze,
   and a mountaintop.  Your goal is to get the treasure
   without being killed first.
 */
 
 /*
-  First, text descriptions of all the places in 
+  First, text descriptions of all the places in
   the game.
 */
 description(valley,
@@ -22,6 +22,8 @@ description(maze(_),
   'You are in a maze of twisty trails, all alike.').
 description(mountaintop,
   'You are on the mountaintop.').
+description(gate,
+  'You are at the gate opening').
 
 /*
   report prints the description of your current
@@ -44,7 +46,8 @@ connect(path,right,cliff).
 connect(path,left,cliff).
 connect(path,forward,fork).
 connect(fork,left,maze(0)).
-connect(fork,right,mountaintop).
+connect(fork,right,gate).
+connect(gate,forward,mountaintop).
 connect(maze(0),left,maze(1)).
 connect(maze(0),right,maze(3)).
 connect(maze(1),left,maze(0)).
@@ -65,6 +68,9 @@ move(Dir) :-
   assert(at(you,Next)),
   report,
   !.
+
+
+
 /*
   But if the argument was not a legal direction,
   print an error message and don't move.
@@ -81,7 +87,7 @@ left :- move(left).
 right :- move(right).
 
 /*
-  If you and the ogre are at the same place, it 
+  If you and the ogre are at the same place, it
   kills you.
 */
 ogre :-
@@ -133,13 +139,13 @@ cliff.
 /*
   Main loop.  Stop if player won or lost.
 */
-main :- 
+main :-
   at(you,done),
   write('Thanks for playing.\n'),
   !.
 /*
   Main loop.  Not done, so get a move from the user
-  and make it.  Then run all our special behaviors.  
+  and make it.  Then run all our special behaviors.
   Then repeat.
 */
 main :-
@@ -166,3 +172,13 @@ go :-
   write('End each move with a period.\n\n'),
   report,
   main.
+
+getKey :-
+  has(you,nothing),
+  assert(has(you,key)),
+  retract(has(you,nothing)),
+  writeln('you have found the key to get through the gate!'),!.
+
+getKey :-
+  writeln('you already have the key..').
+
